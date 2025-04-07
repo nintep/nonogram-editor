@@ -9,6 +9,9 @@
 ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
   setWindowTitle("Choose Nonogram Size");
 
+  gridHeight = 10;
+  gridWidth = 10;
+
   QVBoxLayout *verticalLayout = new QVBoxLayout(this);
 
   QLabel *description =
@@ -24,7 +27,7 @@ ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
   inputWidthLayout->addWidget(widthInput);
   verticalLayout->addLayout(inputWidthLayout);
   widthInput->setRange(2, 100);
-  widthInput->setValue(10);
+  widthInput->setValue(gridWidth);
   connect(widthInput, qOverload<int>(&QSpinBox::valueChanged), this,
           &ChooseSizeDialog::setWidth);
 
@@ -36,7 +39,7 @@ ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
   inputHeightLayout->addWidget(heightInput);
   verticalLayout->addLayout(inputHeightLayout);
   heightInput->setRange(2, 100);
-  heightInput->setValue(10);
+  heightInput->setValue(gridHeight);
   connect(heightInput, qOverload<int>(&QSpinBox::valueChanged), this,
           &ChooseSizeDialog::setHeight);
 
@@ -52,6 +55,7 @@ ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
 }
 
 void ChooseSizeDialog::submitButtonClicked() {
+  printf("Submit: Width: %d, Height: %d\n", gridWidth, gridHeight);
   emit sizeSelected(gridWidth, gridHeight);
   accept();
 }
