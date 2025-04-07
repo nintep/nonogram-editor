@@ -2,7 +2,7 @@
 
 #include <QMainWindow>
 
-#include "nonogram_grid.h"
+#include "../core/nonogram.h"
 #include "nonogram_scene.h"
 #include "nonogram_view.h"
 

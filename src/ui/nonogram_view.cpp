@@ -19,7 +19,7 @@ void NonogramView::resetViewToCenter() {
   // Add padding to avoid overlapping with scrollbars
   float xPadding = boundingRect.width() > boundingRect.height() ? 70 : 0;
   float yPadding = boundingRect.width() > boundingRect.height() ? 0 : 70;
-  boundingRect.adjust(0, 0, xPadding, yPadding);
+  boundingRect.adjust(xPadding, yPadding, xPadding, yPadding);
 
   fitInView(boundingRect, Qt::KeepAspectRatio);
 }
