@@ -7,13 +7,16 @@
 #include <QVBoxLayout>
 
 ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
-  setWindowTitle("Choose Nonogram Size");
+  setWindowTitle("Create nonogram");
 
   gridHeight = 10;
   gridWidth = 10;
 
   QVBoxLayout *verticalLayout = new QVBoxLayout(this);
 
+  QLabel *createTitle = new QLabel("Create a new nonogram:", this);
+  createTitle->setStyleSheet("font-weight: bold; font-size: 16px;");
+  verticalLayout->addWidget(createTitle);
   QLabel *description =
       new QLabel("Give the width and height of your nonogram.");
   description->setWordWrap(false);
@@ -43,10 +46,21 @@ ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
   connect(heightInput, qOverload<int>(&QSpinBox::valueChanged), this,
           &ChooseSizeDialog::setHeight);
 
-  submitButton = new QPushButton("Submit", this);
-  verticalLayout->addWidget(submitButton);
+  submitButton = new QPushButton("Create", this);
   connect(submitButton, &QPushButton::clicked, this,
           &ChooseSizeDialog::submitButtonClicked);
+  verticalLayout->addWidget(submitButton);
+
+  verticalLayout->addSpacerItem(
+      new QSpacerItem(0, 20, QSizePolicy::Minimum, QSizePolicy::Expanding));
+
+  QLabel *openTitle = new QLabel("Edit an existing nonogram:", this);
+  openTitle->setStyleSheet("font-weight: bold; font-size: 16px;");
+  openButton = new QPushButton("Open", this);
+  connect(openButton, &QPushButton::clicked, this,
+          &ChooseSizeDialog::openButtonClicked);
+  verticalLayout->addWidget(openTitle);
+  verticalLayout->addWidget(openButton);
 
   // Center the dialog relative to the main window
   QRect mainWindowGeometry = parentWidget()->geometry();
@@ -55,8 +69,12 @@ ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
 }
 
 void ChooseSizeDialog::submitButtonClicked() {
-  printf("Submit: Width: %d, Height: %d\n", gridWidth, gridHeight);
   emit sizeSelected(gridWidth, gridHeight);
+  accept();
+}
+
+void ChooseSizeDialog::openButtonClicked() {
+  emit openSelected();
   accept();
 }
 

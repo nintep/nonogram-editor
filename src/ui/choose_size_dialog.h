@@ -12,12 +12,15 @@ class ChooseSizeDialog : public QDialog {
 
  signals:
   void sizeSelected(int width, int height);
+  void openSelected();
 
  private:
   QPushButton* submitButton;
+  QPushButton* openButton;
   void setWidth(int width) { this->gridWidth = width; }
   void setHeight(int height) { this->gridHeight = height; }
   void submitButtonClicked();
+  void openButtonClicked();
   int gridWidth;
   int gridHeight;
 };

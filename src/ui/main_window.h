@@ -7,8 +7,8 @@
 #include "../io/io_manager.h"
 #include "choose_mode_dialog.h"
 #include "choose_size_dialog.h"
-#include "nonogram_scene.h"
-#include "nonogram_view.h"
+#include "nonogram/nonogram_scene.h"
+#include "nonogram/nonogram_view.h"
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -25,9 +25,12 @@ class MainWindow : public QMainWindow {
   void showChooseSizeDialog();
   void showSaveAsDialog();
   void showLoadDialog();
+  void saveButtonPressed();
   void saveToFile(const QString &filename);
   void loadFromFile(const QString &filename);
+
   editorMode currentMode;
   NonogramScene *scene;
   NonogramView *view;
+  QString latestNonogramFilePath{""};
 };

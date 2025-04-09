@@ -2,6 +2,7 @@
 
 #include <QLabel>
 #include <QPushButton>
+#include <QStatusBar>
 #include <QTimer>
 #include <QToolBar>
 
@@ -12,8 +13,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   QAction *saveAction = toolbar->addAction("Save");
   QAction *saveAsAction = toolbar->addAction("Save As");
 
+  statusBar();
+
   connect(newAction, &QAction::triggered, this,
           &MainWindow::showChooseSizeDialog);
+
+  connect(saveAction, &QAction::triggered, this,
+          &MainWindow::saveButtonPressed);
 
   connect(saveAsAction, &QAction::triggered, this,
           &MainWindow::showSaveAsDialog);
@@ -38,12 +44,12 @@ void MainWindow::saveToFile(const QString &filename) {
     return;
   }
 
-  printf("Saving to file: %s\n", filename.toStdString().c_str());
   Nonogram *nonogram = scene->getNonogram();
   if (IOManager::saveNonogramTofile(filename, nonogram)) {
-    printf("File saved successfully\n");
+    latestNonogramFilePath = filename;
+    statusBar()->showMessage("File saved successfully", 2000);
   } else {
-    printf("Failed to save file\n");
+    statusBar()->showMessage("Failed to save file", 2000);
   }
 }
 
@@ -54,11 +60,21 @@ void MainWindow::loadFromFile(const QString &filename) {
 
   Nonogram *nonogram = scene->getNonogram();
   if (IOManager::loadNonogramFromFile(filename, nonogram)) {
-    printf("File loaded successfully\n");
     scene->setNonogram(*nonogram);
     view->resetViewToCenter();
+
+    latestNonogramFilePath = filename;
+    statusBar()->showMessage("File loaded successfully", 2000);
   } else {
-    printf("Failed to load file\n");
+    statusBar()->showMessage("Failed to load file", 2000);
+  }
+}
+
+void MainWindow::saveButtonPressed() {
+  if (latestNonogramFilePath.isEmpty()) {
+    showSaveAsDialog();
+  } else {
+    saveToFile(latestNonogramFilePath);
   }
 }
 
@@ -71,6 +87,8 @@ void MainWindow::showChooseModeDialog() {
 void MainWindow::showChooseSizeDialog() {
   ChooseSizeDialog dialog(this);
   connect(&dialog, &ChooseSizeDialog::sizeSelected, this, &MainWindow::setSize);
+  connect(&dialog, &ChooseSizeDialog::openSelected, this,
+          &MainWindow::showLoadDialog);
   dialog.show();
 }
 
@@ -111,7 +129,6 @@ void MainWindow::setMode(editorMode mode) {
 }
 
 void MainWindow::setSize(int width, int height) {
-  printf("Choose size %d x %d\n", width, height);
   // TODO: move size validation to the dialog
   int clampedWidth = std::max(2, std::min(width, 50));
   int clampedHeight = std::max(2, std::min(height, 50));

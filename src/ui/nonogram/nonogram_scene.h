@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <vector>
 
-#include "../core/nonogram.h"
+#include "../../core/nonogram.h"
 #include "nonogram_cell.h"
 
 class NonogramScene : public QGraphicsScene {

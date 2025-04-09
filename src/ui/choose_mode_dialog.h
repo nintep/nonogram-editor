@@ -5,17 +5,19 @@
 
 enum editorMode { MODE_SELECT_MODE, MODE_EDIT, MODE_SOLVE };
 
-class ChooseModeDialog : public QMessageBox {
+class ChooseModeDialog : public QDialog {
   Q_OBJECT
 
  public:
-  ChooseModeDialog(QWidget *parent = nullptr);
+  ChooseModeDialog(QWidget* parent = nullptr);
   void show();
 
  signals:
   void modeSelected(editorMode mode);
 
  private:
-  QPushButton *solveButton;
-  QPushButton *editButton;
+  QPushButton* solveButton;
+  QPushButton* editButton;
+  void solveButtonClicked();
+  void editButtonClicked();
 };

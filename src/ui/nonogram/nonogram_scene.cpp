@@ -6,6 +6,10 @@ NonogramScene::NonogramScene(QWidget *parent) : QGraphicsScene(parent) {
   emptyCellColor = Qt::white;
   filledCellColor = Qt::black;
   cellSize = 50.0f;
+
+  // Initialize a default nonogram
+  setNonogram(*new Nonogram(
+      std::vector<std::vector<bool>>(10, std::vector<bool>(10, false))));
 }
 
 void NonogramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) {
