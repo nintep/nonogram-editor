@@ -1,8 +1,10 @@
 #pragma once
 
+#include <QFileDialog>
 #include <QMainWindow>
 
 #include "../core/nonogram.h"
+#include "../io/io_manager.h"
 #include "choose_mode_dialog.h"
 #include "choose_size_dialog.h"
 #include "nonogram_scene.h"
@@ -21,6 +23,10 @@ class MainWindow : public QMainWindow {
  private:
   void showChooseModeDialog();
   void showChooseSizeDialog();
+  void showSaveAsDialog();
+  void showLoadDialog();
+  void saveToFile(const QString &filename);
+  void loadFromFile(const QString &filename);
   editorMode currentMode;
   NonogramScene *scene;
   NonogramView *view;

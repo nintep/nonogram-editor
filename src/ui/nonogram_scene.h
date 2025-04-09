@@ -15,6 +15,7 @@ class NonogramScene : public QGraphicsScene {
   NonogramScene(QWidget *parent = nullptr);
   void resetGrid(int width, int height);
   void setNonogram(Nonogram &nonogram);
+  Nonogram *getNonogram() { return nonogram; };
 
  protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;

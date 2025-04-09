@@ -9,7 +9,7 @@ class Nonogram {
   Nonogram(std::vector<std::vector<bool>> nonogramData);
   void setCell(int x, int y, bool value);
   bool getCell(int x, int y) const;
-  void clear();
+  void setData(std::vector<std::vector<bool>> nonogramData);
   int getWidth() const { return width; }
   int getHeight() const { return height; }
   std::vector<std::vector<bool>> getCells() const { return cells; }

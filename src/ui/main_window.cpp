@@ -15,6 +15,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   connect(newAction, &QAction::triggered, this,
           &MainWindow::showChooseSizeDialog);
 
+  connect(saveAsAction, &QAction::triggered, this,
+          &MainWindow::showSaveAsDialog);
+
+  connect(openAction, &QAction::triggered, this, &MainWindow::showLoadDialog);
+
   currentMode = MODE_SELECT_MODE;
 
   scene = new NonogramScene(this);
@@ -23,37 +28,74 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   view = new NonogramView(scene, this);
   view->resetViewToCenter();
 
+  // Short delay before open mode dialog
   QTimer::singleShot(20, this, &MainWindow::showChooseModeDialog);
-
-  /* std::vector<std::vector<bool>> nonogramData = {
-      {true, true, true, false, true},    {false, false, false, true, false},
-      {false, true, false, true, false},  {false, false, false, true, false},
-      {false, true, true, true, false},   {false, true, false, true, false},
-      {false, true, true, true, false},   {false, true, false, true, false},
-      {false, true, false, true, false},  {false, true, false, false, false},
-      {false, false, true, false, false}, {false, true, true, true, false},
-      {false, false, false, true, true},  {false, true, true, true, false},
-      {false, true, false, true, true},   {false, true, false, true, false},
-      {false, true, false, true, true},   {false, true, false, true, false},
-      {true, false, true, false, true}};
-
-  Nonogram *nonogram = new Nonogram(nonogramData); */
-
   setCentralWidget(view);
+}
+
+void MainWindow::saveToFile(const QString &filename) {
+  if (filename.isEmpty()) {
+    return;
+  }
+
+  printf("Saving to file: %s\n", filename.toStdString().c_str());
+  Nonogram *nonogram = scene->getNonogram();
+  if (IOManager::saveNonogramTofile(filename, nonogram)) {
+    printf("File saved successfully\n");
+  } else {
+    printf("Failed to save file\n");
+  }
+}
+
+void MainWindow::loadFromFile(const QString &filename) {
+  if (filename.isEmpty()) {
+    return;
+  }
+
+  Nonogram *nonogram = scene->getNonogram();
+  if (IOManager::loadNonogramFromFile(filename, nonogram)) {
+    printf("File loaded successfully\n");
+    scene->setNonogram(*nonogram);
+    view->resetViewToCenter();
+  } else {
+    printf("Failed to load file\n");
+  }
 }
 
 void MainWindow::showChooseModeDialog() {
   ChooseModeDialog dialog(this);
-  bool connected = connect(&dialog, &ChooseModeDialog::modeSelected, this,
-                           &MainWindow::setMode);
+  connect(&dialog, &ChooseModeDialog::modeSelected, this, &MainWindow::setMode);
   dialog.show();
 }
 
 void MainWindow::showChooseSizeDialog() {
   ChooseSizeDialog dialog(this);
-  bool connected = connect(&dialog, &ChooseSizeDialog::sizeSelected, this,
-                           &MainWindow::setSize);
+  connect(&dialog, &ChooseSizeDialog::sizeSelected, this, &MainWindow::setSize);
   dialog.show();
+}
+
+void MainWindow::showSaveAsDialog() {
+  QFileDialog dialog(this);
+  dialog.setFileMode(QFileDialog::AnyFile);
+  dialog.setNameFilter("Nonogram files (*.nono);;All files (*)");
+  dialog.setDefaultSuffix("nono");
+  dialog.setAcceptMode(QFileDialog::AcceptSave);
+
+  connect(&dialog, &QFileDialog::fileSelected, this, &MainWindow::saveToFile);
+
+  dialog.exec();
+}
+
+void MainWindow::showLoadDialog() {
+  QFileDialog dialog(this);
+  dialog.setFileMode(QFileDialog::ExistingFiles);
+  dialog.setNameFilter("Nonogram files (*.nono)");
+  dialog.setDefaultSuffix("nono");
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  connect(&dialog, &QFileDialog::fileSelected, this, &MainWindow::loadFromFile);
+
+  dialog.exec();
 }
 
 void MainWindow::setMode(editorMode mode) {

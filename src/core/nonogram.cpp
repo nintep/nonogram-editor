@@ -1,6 +1,10 @@
 #include "nonogram.h"
 
 Nonogram::Nonogram(std::vector<std::vector<bool>> nonogramData) {
+  setData(nonogramData);
+}
+
+void Nonogram::setData(std::vector<std::vector<bool>> nonogramData) {
   cells = nonogramData;
 
   if (cells.empty()) {
