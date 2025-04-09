@@ -23,4 +23,5 @@ class Nonogram {
   std::vector<std::vector<bool>> cells;
   std::vector<std::vector<int>> rowHints;
   std::vector<std::vector<int>> colHints;
+  void calculateHints();
 };

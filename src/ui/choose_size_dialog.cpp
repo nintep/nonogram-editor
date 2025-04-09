@@ -26,7 +26,7 @@ ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
   inputWidthLayout->addWidget(widthLabel);
   inputWidthLayout->addWidget(widthInput);
   verticalLayout->addLayout(inputWidthLayout);
-  widthInput->setRange(2, 100);
+  widthInput->setRange(2, 50);
   widthInput->setValue(gridWidth);
   connect(widthInput, qOverload<int>(&QSpinBox::valueChanged), this,
           &ChooseSizeDialog::setWidth);
@@ -38,7 +38,7 @@ ChooseSizeDialog::ChooseSizeDialog(QWidget *parent) : QDialog(parent) {
   inputHeightLayout->addWidget(heightLabel);
   inputHeightLayout->addWidget(heightInput);
   verticalLayout->addLayout(inputHeightLayout);
-  heightInput->setRange(2, 100);
+  heightInput->setRange(2, 50);
   heightInput->setValue(gridHeight);
   connect(heightInput, qOverload<int>(&QSpinBox::valueChanged), this,
           &ChooseSizeDialog::setHeight);

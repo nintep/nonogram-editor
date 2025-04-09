@@ -19,6 +19,8 @@ class NonogramView : public QGraphicsView {
   void showEvent(QShowEvent *event) override;
 
  private:
+  NonogramScene *nonogramScene;
   bool isDragging = false;
   QPointF lastMousePos;
+  float defaultViewPadding = 60.0f;
 };

@@ -6,6 +6,7 @@
 NonogramView::NonogramView(NonogramScene *scene, QWidget *parent)
     : QGraphicsView(scene, parent) {
   lastMousePos = QPointF(0, 0);
+  nonogramScene = scene;
 }
 
 void NonogramView::showEvent(QShowEvent *event) {
@@ -15,6 +16,8 @@ void NonogramView::showEvent(QShowEvent *event) {
 
 void NonogramView::resetViewToCenter() {
   QRectF boundingRect = scene()->itemsBoundingRect();
+  boundingRect.adjust(-defaultViewPadding, -defaultViewPadding,
+                      defaultViewPadding, defaultViewPadding);
   fitInView(boundingRect, Qt::KeepAspectRatio);
 }
 
@@ -40,7 +43,7 @@ void NonogramView::mouseReleaseEvent(QMouseEvent *event) {
     isDragging = false;
     lastMousePos = event->pos();
   } else {
-    QGraphicsView::mousePressEvent(event);
+    QGraphicsView::mouseReleaseEvent(event);
   }
 }
 
@@ -49,6 +52,8 @@ void NonogramView::mouseMoveEvent(QMouseEvent *event) {
     QPointF delta = event->pos() - lastMousePos;
     horizontalScrollBar()->setValue(horizontalScrollBar()->value() - delta.x());
     verticalScrollBar()->setValue(verticalScrollBar()->value() - delta.y());
+  } else {
+    QGraphicsView::mouseMoveEvent(event);
   }
 
   lastMousePos = event->pos();

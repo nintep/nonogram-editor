@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   currentMode = MODE_SELECT_MODE;
 
   scene = new NonogramScene(this);
-  scene->resetGrid(50, 20);
+  scene->resetGrid(20, 20);
 
   view = new NonogramView(scene, this);
   view->resetViewToCenter();
@@ -70,6 +70,9 @@ void MainWindow::setMode(editorMode mode) {
 
 void MainWindow::setSize(int width, int height) {
   printf("Choose size %d x %d\n", width, height);
-  scene->resetGrid(width, height);
+  // TODO: move size validation to the dialog
+  int clampedWidth = std::max(2, std::min(width, 50));
+  int clampedHeight = std::max(2, std::min(height, 50));
+  scene->resetGrid(clampedWidth, clampedHeight);
   view->resetViewToCenter();
 }

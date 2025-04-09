@@ -8,27 +8,66 @@ NonogramScene::NonogramScene(QWidget *parent) : QGraphicsScene(parent) {
   cellSize = 50.0f;
 }
 
+void NonogramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+  handleMousePressed(mouseEvent->scenePos(), mouseEvent->buttons());
+}
+
+void NonogramScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) {
+  if (mouseEvent->buttons() == Qt::NoButton) {
+    return;
+  }
+  handleMousePressed(mouseEvent->scenePos(), mouseEvent->buttons());
+}
+
+void NonogramScene::handleMousePressed(QPointF scenePos,
+                                       Qt::MouseButtons buttons) {
+  if (nonogram == nullptr) {
+    return;
+  }
+
+  // Check if trying to paint cells
+  if (buttons != Qt::LeftButton && buttons != Qt::RightButton) {
+    return;
+  }
+
+  // Check if the mouse is over a cell
+  QGraphicsItem *item = itemAt(scenePos, QTransform());
+  if (item) {
+    NonogramCell *cell = dynamic_cast<NonogramCell *>(item);
+    if (cell) {
+      bool cellTargetValue = (buttons == Qt::LeftButton) ? true : false;
+
+      // Update nonogram if cell's target value is different
+      if (nonogram->getCell(cell->getX(), cell->getY()) != cellTargetValue) {
+        nonogram->setCell(cell->getX(), cell->getY(), cellTargetValue);
+        setNonogram(*nonogram);
+      }
+    }
+  }
+}
+
 void NonogramScene::resetGrid(int width, int height) {
   clear();
 
-  gridWidth = width;
-  gridHeight = height;
-
-  float xOffset = getXOffset();
-  float yOffset = getYOffset();
+  // Create a new empty nonogram
+  std::vector<std::vector<bool>> nonogramData(height,
+                                              std::vector<bool>(width, false));
+  nonogram = new Nonogram(nonogramData);
 
   for (int j = 0; j < height; j++) {
     for (int i = 0; i < width; i++) {
-      addRect(i * cellSize + xOffset, j * cellSize + yOffset, cellSize,
-              cellSize, QPen(lineColor), QBrush(emptyCellColor));
+      createCellAtPosition(i, j, false);
     }
   }
 }
 
 void NonogramScene::setNonogram(Nonogram &nonogram) {
+  int gridWidth = nonogram.getWidth();
+  int gridHeight = nonogram.getHeight();
+
   clear();
-  gridWidth = nonogram.getWidth();
-  gridHeight = nonogram.getHeight();
+
+  this->nonogram = &nonogram;
 
   float xOffset = getXOffset();
   float yOffset = getYOffset();
@@ -36,10 +75,7 @@ void NonogramScene::setNonogram(Nonogram &nonogram) {
   // Draw nonogram grid
   for (int j = 0; j < gridHeight; j++) {
     for (int i = 0; i < gridWidth; i++) {
-      QColor cellColor =
-          nonogram.getCell(i, j) ? filledCellColor : emptyCellColor;
-      addRect(i * cellSize + xOffset, j * cellSize + yOffset, cellSize,
-              cellSize, QPen(lineColor), QBrush(cellColor));
+      createCellAtPosition(i, j, nonogram.getCell(i, j));
     }
   }
 
@@ -64,4 +100,19 @@ void NonogramScene::setNonogram(Nonogram &nonogram) {
           ->setPos(hintPos);
     }
   }
+}
+
+void NonogramScene::createCellAtPosition(int x, int y, bool value) {
+  // printf("Draw cell at (%d, %d) with value %d\n", x, y, value);
+  float xOffset = getXOffset();
+  float yOffset = getYOffset();
+
+  NonogramCell *cell = new NonogramCell(x, y);
+
+  cell->setRect(x * cellSize + xOffset, y * cellSize + yOffset, cellSize,
+                cellSize);
+  cell->setPen(QPen(lineColor));
+  cell->setCellColor(value ? filledCellColor : emptyCellColor);
+
+  this->addItem(cell);
 }
