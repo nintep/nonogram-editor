@@ -22,17 +22,6 @@ void Nonogram::setData(std::vector<std::vector<bool>> nonogramData) {
   calculateHints();
 }
 
-void Nonogram::printNonogram() const {
-  printf("Nonogram (%d x %d):\n", width, height);
-
-  // Print cells
-  for (int i = 0; i < height; ++i) {
-    for (int j = 0; j < width; ++j) {
-      printf("%d ", cells[i][j] ? 1 : 0);
-    }
-  }
-}
-
 bool Nonogram::getCell(int x, int y) const {
   if (x < 0 || x >= width || y < 0 || y >= height) {
     throw std::out_of_range("Cell coordinates are out of range");
@@ -86,4 +75,18 @@ void Nonogram::calculateHints() {
       colHints[i].push_back(count);
     }
   }
+}
+
+bool Nonogram::equals(const Nonogram &other) const {
+  if (width != other.getWidth() || height != other.getHeight()) {
+    return false;
+  }
+  for (int j = 0; j < height; ++j) {
+    for (int i = 0; i < width; ++i) {
+      if (cells[j][i] != other.cells[j][i]) {
+        return false;
+      }
+    }
+  }
+  return true;
 }

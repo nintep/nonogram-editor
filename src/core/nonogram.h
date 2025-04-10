@@ -15,7 +15,7 @@ class Nonogram {
   std::vector<std::vector<bool>> getCells() const { return cells; }
   std::vector<std::vector<int>> getRowHints() const { return rowHints; }
   std::vector<std::vector<int>> getColHints() const { return colHints; }
-  void printNonogram() const;
+  bool equals(const Nonogram &other) const;
 
  private:
   int width;

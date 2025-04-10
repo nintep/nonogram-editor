@@ -2,7 +2,7 @@
 
 NonogramScene::NonogramScene(QWidget *parent) : QGraphicsScene(parent) {
   setSceneRect(QRectF(0, 0, sceneWidth, sceneHeight));
-  lineColor = Qt::black;
+  lineColor = Qt::darkGray;
   emptyCellColor = Qt::white;
   filledCellColor = Qt::black;
   cellSize = 50.0f;
@@ -84,6 +84,10 @@ void NonogramScene::handleMousePressed(QPointF scenePos,
               cellTargetValue) {
             solveState->setCell(cell->getX(), cell->getY(), cellTargetValue);
             setVisibleCells(*solveState);
+
+            if (solveState->equals(*nonogram)) {
+              emit nonogramSolved();
+            }
           }
         } else if (currentMode == MODE_EDIT) {
           // Update nonogram
@@ -123,6 +127,23 @@ void NonogramScene::setNonogram(Nonogram &nonogram) {
   }
 
   this->nonogram = &nonogram;
+
+  if (currentMode == MODE_SOLVE) {
+    // Discard current solve state
+    if (solveState != nullptr) {
+      delete solveState;
+      solveState = nullptr;
+    }
+
+    // Initialize empty solve state
+    solveState = new Nonogram(std::vector<std::vector<bool>>(
+        nonogram.getHeight(), std::vector<bool>(nonogram.getWidth(), false)));
+
+    setVisibleCells(*solveState);
+    setVisibleHints(nonogram);
+    return;
+  }
+
   setVisibleCells(nonogram);
   setVisibleHints(nonogram);
 }

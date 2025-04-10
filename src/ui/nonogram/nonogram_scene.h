@@ -19,8 +19,10 @@ class NonogramScene : public QGraphicsScene {
   void resetGrid(int width, int height);
   void setNonogram(Nonogram &nonogram);
   Nonogram *getNonogram() { return nonogram; };
-
   void setMode(editorMode mode);
+
+ signals:
+  void nonogramSolved();
 
  protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;

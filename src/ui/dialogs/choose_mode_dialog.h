@@ -3,7 +3,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 
-#include "editor_mode.h"
+#include "../editor_mode.h"
 
 class ChooseModeDialog : public QDialog {
   Q_OBJECT

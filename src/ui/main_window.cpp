@@ -15,6 +15,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
   toolBar = addToolBar("Main Toolbar");
   statusBar();
 
+  connect(scene, &NonogramScene::nonogramSolved, this,
+          &MainWindow::showNonogramSolvedDialog);
+
   // Short delay before open mode dialog
   QTimer::singleShot(20, this, &MainWindow::showChooseModeDialog);
   setCentralWidget(view);
@@ -66,7 +69,6 @@ void MainWindow::showChooseModeDialog() {
 }
 
 void MainWindow::showChooseSizeDialog() {
-  printf("Choose size dialog\n");
   ChooseSizeDialog dialog(this);
   connect(&dialog, &ChooseSizeDialog::sizeSelected, this, &MainWindow::setSize);
   connect(&dialog, &ChooseSizeDialog::openSelected, this,
@@ -96,6 +98,11 @@ void MainWindow::showLoadDialog() {
   connect(&dialog, &QFileDialog::fileSelected, this, &MainWindow::loadFromFile);
 
   dialog.exec();
+}
+
+void MainWindow::showNonogramSolvedDialog() {
+  NonogramSolvedDialog dialog(this);
+  dialog.show();
 }
 
 void MainWindow::setMode(editorMode mode) {
