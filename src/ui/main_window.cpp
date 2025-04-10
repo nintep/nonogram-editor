@@ -4,35 +4,16 @@
 #include <QPushButton>
 #include <QStatusBar>
 #include <QTimer>
-#include <QToolBar>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-  QToolBar *toolbar = addToolBar("toolbar");
-  QAction *newAction = toolbar->addAction("New");
-  QAction *openAction = toolbar->addAction("Open");
-  QAction *saveAction = toolbar->addAction("Save");
-  QAction *saveAsAction = toolbar->addAction("Save As");
-
-  statusBar();
-
-  connect(newAction, &QAction::triggered, this,
-          &MainWindow::showChooseSizeDialog);
-
-  connect(saveAction, &QAction::triggered, this,
-          &MainWindow::saveButtonPressed);
-
-  connect(saveAsAction, &QAction::triggered, this,
-          &MainWindow::showSaveAsDialog);
-
-  connect(openAction, &QAction::triggered, this, &MainWindow::showLoadDialog);
-
   currentMode = MODE_SELECT_MODE;
 
   scene = new NonogramScene(this);
-  scene->resetGrid(20, 20);
-
   view = new NonogramView(scene, this);
   view->resetViewToCenter();
+
+  toolBar = addToolBar("Main Toolbar");
+  statusBar();
 
   // Short delay before open mode dialog
   QTimer::singleShot(20, this, &MainWindow::showChooseModeDialog);
@@ -85,6 +66,7 @@ void MainWindow::showChooseModeDialog() {
 }
 
 void MainWindow::showChooseSizeDialog() {
+  printf("Choose size dialog\n");
   ChooseSizeDialog dialog(this);
   connect(&dialog, &ChooseSizeDialog::sizeSelected, this, &MainWindow::setSize);
   connect(&dialog, &ChooseSizeDialog::openSelected, this,
@@ -117,14 +99,10 @@ void MainWindow::showLoadDialog() {
 }
 
 void MainWindow::setMode(editorMode mode) {
-  printf("Choose mode");
   if (mode == MODE_SOLVE) {
-    printf("Solve mode selected\n");
-    currentMode == MODE_SOLVE;
+    enterSolveMode();
   } else if (mode == MODE_EDIT) {
-    printf("Edit mode selected\n");
-    currentMode == MODE_EDIT;
-    showChooseSizeDialog();
+    enterEditMode();
   }
 }
 
@@ -134,4 +112,64 @@ void MainWindow::setSize(int width, int height) {
   int clampedHeight = std::max(2, std::min(height, 50));
   scene->resetGrid(clampedWidth, clampedHeight);
   view->resetViewToCenter();
+}
+
+void MainWindow::enterEditMode() {
+  if (currentMode == MODE_EDIT) {
+    return;
+  }
+
+  // Set up edit mode toolbar
+  toolBar->clear();
+  QAction *newAction = toolBar->addAction("New");
+  QAction *openAction = toolBar->addAction("Open");
+  QAction *saveAction = toolBar->addAction("Save");
+  QAction *saveAsAction = toolBar->addAction("Save As");
+
+  QWidget *spacer = new QWidget();
+  spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  toolBar->addWidget(spacer);
+
+  QAction *solveAction = toolBar->addAction("Solve");
+
+  connect(newAction, &QAction::triggered, this,
+          &MainWindow::showChooseSizeDialog);
+
+  connect(saveAction, &QAction::triggered, this,
+          &MainWindow::saveButtonPressed);
+
+  connect(saveAsAction, &QAction::triggered, this,
+          &MainWindow::showSaveAsDialog);
+
+  connect(openAction, &QAction::triggered, this, &MainWindow::showLoadDialog);
+  connect(solveAction, &QAction::triggered, this, &MainWindow::enterSolveMode);
+
+  if (currentMode == MODE_SELECT_MODE) {
+    showChooseSizeDialog();
+  }
+
+  currentMode = MODE_EDIT;
+  scene->setMode(MODE_EDIT);
+}
+
+void MainWindow::enterSolveMode() {
+  if (currentMode == MODE_SOLVE) {
+    return;
+  }
+
+  // Set up solve mode toolbar
+  toolBar->clear();
+  QAction *openAction = toolBar->addAction("Open");
+
+  QWidget *spacer = new QWidget();
+  spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  toolBar->addWidget(spacer);
+
+  QAction *editAction = toolBar->addAction("Edit");
+
+  connect(openAction, &QAction::triggered, this, &MainWindow::showLoadDialog);
+  connect(editAction, &QAction::triggered, this, &MainWindow::enterEditMode);
+
+  currentMode = MODE_SOLVE;
+  scene->setMode(MODE_SOLVE);
 }

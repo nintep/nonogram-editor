@@ -1,11 +1,14 @@
 #pragma once
 
+#include <QGraphicsItemGroup>
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
+#include <QGraphicsTextItem>
 #include <QWidget>
 #include <vector>
 
 #include "../../core/nonogram.h"
+#include "../editor_mode.h"
 #include "nonogram_cell.h"
 
 class NonogramScene : public QGraphicsScene {
@@ -16,6 +19,8 @@ class NonogramScene : public QGraphicsScene {
   void resetGrid(int width, int height);
   void setNonogram(Nonogram &nonogram);
   Nonogram *getNonogram() { return nonogram; };
+
+  void setMode(editorMode mode);
 
  protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
@@ -28,7 +33,17 @@ class NonogramScene : public QGraphicsScene {
   QColor lineColor;
   QColor emptyCellColor;
   QColor filledCellColor;
+  editorMode currentMode;
+
   Nonogram *nonogram;
+  Nonogram *solveState;
+
+  QGraphicsItemGroup *cellsGroup;
+  QGraphicsItemGroup *hintsGroup;
+
+  void setVisibleCells(Nonogram &nonogram);
+  void setVisibleHints(Nonogram &nonogram);
+
   void createCellAtPosition(int x, int y, bool value);
   void handleMousePressed(QPointF scenePos, Qt::MouseButtons buttons);
 
